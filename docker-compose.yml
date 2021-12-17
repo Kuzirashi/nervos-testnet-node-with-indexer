@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  ckb:
+    image: nervos/ckb:latest
+    container_name: ckb-testnet-node
+    command: run
+    ports:
+      - 28114:28114 # rpc.ws_listen_address
+      - 8114:8114
+      - 8115:8115
+    volumes:
+      - ./ckb-chain-data:/var/lib/ckb
+    environment:
+      CKB_CHAIN: testnet
+  
+  indexer:
+    image: nervos/ckb-indexer:latest
+    container_name: ckb-testnet-indexer
+    command: -s /data -c http://ckb:8114 -l 0.0.0.0:8116
+    volumes:
+    - ./indexer-data:/data
+    ports:
+      - 8116:8116
+    depends_on:
+        - ckb
